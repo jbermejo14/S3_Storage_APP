@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from .forms import UploadedFileForm
 
 
-def upload_file(request):
+def index(request):
     if request.method == 'POST':
         form = UploadedFileForm(request.POST, request.FILES)
         if form.is_valid():
@@ -10,7 +10,7 @@ def upload_file(request):
             return redirect('upload_success')
     else:
         form = UploadedFileForm()
-    return render(request, 'upload.html', {'form': form})
+    return render(request, 'index.html', {'form': form})
 
 
 def upload_success(request):
