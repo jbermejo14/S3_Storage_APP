@@ -93,7 +93,7 @@ resource "aws_instance" "S3_App_Instance" {
     Name = "S3_App_Instance"
   }
 }
-resource "aws_s3_bucket" "App_bucket" {
+resource "aws_s3_bucket" "S3_App_bucket" {
   bucket = "jb-storage-app-bucket"
 
   tags = {
@@ -101,4 +101,19 @@ resource "aws_s3_bucket" "App_bucket" {
     Environment = "Dev"
   }
 }
+
+resource "aws_db_instance" "S3_App_DB" {
+  identifier            = "my-postgres-db"
+  allocated_storage     = 20
+  storage_type          = "gp2"
+  engine                = "postgres"
+  engine_version        = "13.4"
+  instance_class        = "db.t3.micro"
+  name                  = "S3_APP_DB"
+  username              = "admin"
+  password              = "password"
+  parameter_group_name  = "default.postgres13"
+  publicly_accessible   = false
+}
+
 
