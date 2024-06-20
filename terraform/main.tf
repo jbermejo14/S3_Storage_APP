@@ -1,75 +1,60 @@
-resource "aws_vpc" "S3_app_vpc" {
-  cidr_block           = "10.0.0.0/16"
+resource "aws_vpc" "my_vpc" {
+  cidr_block           = "10.123.0.0/16"
   enable_dns_hostnames = true
   enable_dns_support   = true
 
   tags = {
-    Name = "dev-app-S3"
+    Name = "dev"
   }
 }
 
-resource "aws_subnet" "App_public_subnet-1a" {
-  vpc_id                  = aws_vpc.S3_app_vpc.id
-  cidr_block              = "10.0.1.0/24"
+resource "aws_subnet" "my_public_subnet" {
+  vpc_id                  = aws_vpc.my_vpc.id
+  cidr_block              = "10.123.1.0/24"
   map_public_ip_on_launch = true
   availability_zone       = "us-east-1a"
 
   tags = {
-    Name = "app-public-1a"
+    Name = "dev-public"
   }
 }
 
-
-resource "aws_internet_gateway" "S3_APP_Internet_GW" {
-  vpc_id = aws_vpc.S3_app_vpc.id
+resource "aws_internet_gateway" "my_internet_gateway" {
+  vpc_id = aws_vpc.my_vpc.id
 
   tags = {
-    Name = "S3-dev-igw"
+    Name = "dev-igw"
   }
 }
 
-resource "aws_route_table" "S3_APP_Route_Table" {
-  vpc_id = aws_vpc.S3_app_vpc.id
+resource "aws_route_table" "my_public_rt" {
+  vpc_id = aws_vpc.my_vpc.id
 
   tags = {
-    Name = "S3-dev-public_rt"
+    Name = "dev-public_rt"
   }
 }
 
-resource "aws_route" "S3_APP_default_route" {
-  route_table_id         = aws_route_table.S3_APP_Route_Table.id
+resource "aws_route" "default_route" {
+  route_table_id         = aws_route_table.my_public_rt.id
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.S3_APP_Internet_GW.id
+  gateway_id             = aws_internet_gateway.my_internet_gateway.id
 }
 
 resource "aws_route_table_association" "my_public_assoc" {
-  subnet_id      = aws_subnet.App_public_subnet-1a.id
-  route_table_id = aws_route_table.S3_APP_Route_Table.id
+  subnet_id      = aws_subnet.my_public_subnet.id
+  route_table_id = aws_route_table.my_public_rt.id
 }
 
-resource "aws_security_group" "S3_APP_SG" {
-  name        = "S3_APP_SG_DEV"
-  description = "SG for S3_App"
-  vpc_id      = aws_vpc.S3_app_vpc.id
+resource "aws_security_group" "my_sg" {
+  name        = "dev_sg"
+  description = "dev security group"
+  vpc_id      = aws_vpc.my_vpc.id
 
   ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] #change to my IP
-  }
-
-  ingress {
-    from_port   = 8000
-    to_port     = 8000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] #change to my IP
-  }
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"] #change to my IP
   }
 
@@ -81,26 +66,32 @@ resource "aws_security_group" "S3_APP_SG" {
   }
 }
 
+resource "aws_key_pair" "my_auth" {
+  key_name   = "my_key_s3"
+  public_key = file("~/.ssh/my_key.pub")
+}
+
+
 resource "aws_instance" "S3_App_Instance" {
     ami           = "ami-08a0d1e16fc3f61ea"
   instance_type   = "t2.micro"
-  subnet_id       = aws_subnet.App_public_subnet-1a.id
-  security_groups = [aws_security_group.S3_APP_SG.id]
+  subnet_id       = aws_subnet.my_public_subnet.id
+  security_groups = [aws_security_group.my_sg.id]
+  key_name               = aws_key_pair.my_auth.id
   user_data       = <<EOF
                     #!/bin/bash
                     sudo yum install git -y
                     sudo yum install python -y
+                    sudo yum install pip -y
+                    sudo pip install django
                     sudo git clone https://github.com/jbermejo14/S3_Storage_APP.git
-                    jbermejo14
-                    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
                     cd S3_Storage_APP
-                    sudo python manage.py runserver
+                    sudo python manage.py runserver 0.0.0.0:8000
                     EOF
 
   tags = {
     Name = "S3_App_Instance"
   }
-  key_name = "ASC-keypair"
 }
 resource "aws_s3_bucket" "App_bucket" {
   bucket = "jb-storage-app-bucket"
