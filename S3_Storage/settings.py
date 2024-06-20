@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-evcvl!xun7d9gcsqfprp#9po74%j(83q-@*4@$qtql)5ia)j*&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '127.0.0.1:8000', 'localhost:8000', '*']
 
 
 # Application definition
@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'S3_StorageApp.apps.S3StorageappConfig',
+    'storages'
 ]
 
 MIDDLEWARE = [

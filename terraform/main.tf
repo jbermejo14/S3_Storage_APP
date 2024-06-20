@@ -79,15 +79,19 @@ resource "aws_instance" "S3_App_Instance" {
   security_groups = [aws_security_group.my_sg.id]
   key_name               = aws_key_pair.my_auth.id
   user_data       = <<EOF
-                    #!/bin/bash
-                    sudo yum install git -y
-                    sudo yum install python -y
-                    sudo yum install pip -y
-                    sudo pip install django
-                    sudo git clone https://github.com/jbermejo14/S3_Storage_APP.git
-                    cd S3_Storage_APP
-                    sudo python manage.py runserver 0.0.0.0:8000
-                    EOF
+#!/bin/bash
+sudo yum install git -y
+sudo yum install python -y
+sudo yum install pip -y
+sudo yum install docker -y
+sudo systemctl start docker
+sudo pip install django
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+sudo git clone https://github.com/jbermejo14/S3_Storage_APP.git
+cd S3_Storage_APP
+sudo docker-compose up --build
+EOF
 
   tags = {
     Name = "S3_App_Instance"
@@ -103,17 +107,14 @@ resource "aws_s3_bucket" "S3_App_bucket" {
 }
 
 resource "aws_db_instance" "S3_App_DB" {
-  identifier            = "my-postgres-db"
+  identifier            = "s3-app-db-instance"  # Unique identifier for your RDS instance
   allocated_storage     = 20
   storage_type          = "gp2"
   engine                = "postgres"
-  engine_version        = "13.4"
+  engine_version        = "16.3"
   instance_class        = "db.t3.micro"
-  name                  = "S3_APP_DB"
-  username              = "admin"
+  username              = "dbadmin"
   password              = "password"
-  parameter_group_name  = "default.postgres13"
   publicly_accessible   = false
 }
-
 
