@@ -1,7 +1,17 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from .forms import UploadedFileForm
 
 
-# Create your views here.
-def index(request):
-    return render(request, 'index.html')
+def upload_file(request):
+    if request.method == 'POST':
+        form = UploadedFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('upload_success')
+    else:
+        form = UploadedFileForm()
+    return render(request, 'filestorage/upload.html', {'form': form})
 
+
+def upload_success(request):
+    return render(request, 'filestorage/upload_success.html')

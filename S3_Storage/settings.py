@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'S3_StorageApp.apps.S3StorageappConfig',
     'storages'
+    'rest_framework'
+
 ]
 
 MIDDLEWARE = [
