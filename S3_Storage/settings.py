@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'S3_StorageApp.apps.S3StorageappConfig',
-    'storages'
+    'storages',
     'rest_framework'
 
 ]
