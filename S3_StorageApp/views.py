@@ -10,8 +10,8 @@ def upload_file(request):
             return redirect('upload_success')
     else:
         form = UploadedFileForm()
-    return render(request, 'filestorage/upload.html', {'form': form})
+    return render(request, 'upload.html', {'form': form})
 
 
 def upload_success(request):
-    return render(request, 'filestorage/upload_success.html')
+    return render(request, 'upload_success.html')
