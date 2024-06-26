@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 
-from .models import UploadedFile, User
+from .models import UploadedFile
 
 
 class UploadedFileForm(forms.ModelForm):
@@ -9,10 +9,3 @@ class UploadedFileForm(forms.ModelForm):
         model = UploadedFile
         fields = ['title', 'file']
 
-
-class UserForm(UserCreationForm):
-    email = forms.EmailField(required=True)
-
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'password']
