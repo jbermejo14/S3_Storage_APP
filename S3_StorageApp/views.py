@@ -4,6 +4,8 @@ from .forms import UploadedFileForm
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
 
+from .models import UploadedFile
+
 
 def index(request):
     return render(request, 'index.html')
@@ -65,3 +67,9 @@ def upload_success(request):
 def logout(request):
     logout(request)
     return redirect('login')
+
+
+def view_upload(request):
+    uploaded_files = UploadedFile.objects.filter(user=request.user)
+    return render(request, 'view_uploads.html', {'uploaded_files': uploaded_files})
+

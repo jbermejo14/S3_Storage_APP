@@ -1,0 +1,14 @@
+{% block content %}
+  <h1>Uploaded Files for {{ request.user.username }}</h1>
+
+  <ul>
+    {% for file in uploaded_files %}
+      <li>
+        {{ file.title }} ({{ file.file.size|filesizeformat }})
+        <a href="{{ file.file.url }}">Download</a>
+      </li>
+    {% empty %}
+      <li>No files uploaded yet.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}
