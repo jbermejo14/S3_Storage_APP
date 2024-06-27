@@ -15,18 +15,15 @@ def upload(request):
         form = UploadedFileForm(request.POST, request.FILES)
         if form.is_valid():
             uploaded_file = form.save(commit=False)
-            uploaded_file.user = request.user  # Associate the file with the logged-in user
+            uploaded_file.user_id = request.user.id  # Set user_id to current user's ID
             uploaded_file.save()
-            return redirect('upload_success')  # Ensure you have a URL pattern named 'upload_success'
+            return redirect('upload_success')
     else:
         form = UploadedFileForm()
     return render(request, 'upload.html', {'form': form})
 
 
 def register(request):
-    """
-    Handles user registration.
-    """
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
@@ -34,11 +31,11 @@ def register(request):
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password1')
             user = authenticate(request, username=username, password=password)
+
             if user is not None:
                 login(request, user)
                 return redirect('index')
             else:
-                # Handle the case where authentication fails
                 form.add_error(None, 'Authentication failed. Please try again.')
     else:
         form = UserCreationForm()
