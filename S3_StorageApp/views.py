@@ -7,11 +7,12 @@ from django.contrib.auth.decorators import login_required
 from .models import UploadedFile
 
 
+@login_required(login_url='login_view')
 def index(request):
     return render(request, 'index.html')
 
 
-@login_required
+@login_required(login_url='login_view')
 def upload(request):
     if request.method == 'POST':
         form = UploadedFileForm(request.POST, request.FILES)
@@ -60,13 +61,14 @@ def login_view(request):
     return render(request, 'login.html', {'form': form})
 
 
+@login_required(login_url='login_view')
 def upload_success(request):
     return render(request, 'upload_success.html')
 
 
-def logout(request):
+def logout_view(request):
     logout(request)
-    return redirect('login')
+    return redirect('login_view')
 
 
 def view_upload(request):

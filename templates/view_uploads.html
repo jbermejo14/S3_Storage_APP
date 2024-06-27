@@ -1,14 +1,35 @@
-{% block content %}
-  <h1>Uploaded Files for {{ request.user.username }}</h1>
-
-  <ul>
-    {% for file in uploaded_files %}
-      <li>
-        {{ file.title }} ({{ file.file.size|filesizeformat }})
-        <a href="{{ file.file.url }}">Download</a>
-      </li>
-    {% empty %}
-      <li>No files uploaded yet.</li>
-    {% endfor %}
-  </ul>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uploaded Files</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header">
+                <h1>Uploaded Files for {{ request.user.username }}</h1>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    {% for file in uploaded_files %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ file.title }} ({{ file.file.size|filesizeformat }}) 
+                            <a href="{{ file.file.url }}" class="btn btn-primary btn-sm">Download</a>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item">No files uploaded yet.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script
+</body>
+</html>
